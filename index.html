@@ -9,10 +9,9 @@
     </div>
 </div>
 <div class="dropzone" id="parent">
-    <div class="dropzone"></div>
-    <div class="dropzone"></div>
-    <div class="dropzone"></div>
-    <div class="dragpoints"></div>
+    <div class="dropzone" draggable="true">1</div>
+    <div class="dropzone" draggable="true">2</div>
+    <div class="dropzone" draggable="true">3</div>
 </div>
 
 <style>
@@ -52,6 +51,8 @@
     document.addEventListener("dragstart", function(event) {
         // store a ref. on the dragged elem
         dragged = event.target;
+        // var dragged = event.target.cloneNode(true);
+        // event.target.parentNode.appendChild(dragged);
         // make it half transparent
         event.target.style.opacity = .5;
     }, false);
@@ -67,7 +68,7 @@
         // prevent default to allow drop
         var ev = event || window.event;
         dragged.y = event.pageY;
-        console.log(">>>>>>>>>>>>", event.pageY);
+        //console.log(">>>>>>>>>>>>", event.pageY);
         event.preventDefault();
     }, false);
 
@@ -93,11 +94,11 @@
         // move dragged elem to the selected drop target
         if (event.target.className == "dropzone") {
             event.target.style.background = "";
-            dragged.parentNode.removeChild(dragged);
+            // dragged.parentNode.removeChild(dragged);
             // event.target.appendChild(dragged);
             var parentNode = event.target;
             var childs = event.target.children
-
+            console.log(childs, childs.length);
             var pos = -1;
             if (childs.length > 0) {
                 pos = checkDropPosition(dragged, childs);
@@ -109,6 +110,7 @@
             } else {
                 event.target.appendChild(dragged);
             }
+
         }
 
     }, false);
@@ -116,7 +118,7 @@
         var draggableRect = darggable.getBoundingClientRect();
         var pointY = darggable.y + draggableRect.height / 2;
         console.log(pointY);
-        for (var i in siblings) {
+        for (var i = 0; i < siblings.length; i++) {
             var ele = siblings[i];
             if (isBefore(ele, pointY)) {
                 return i;
