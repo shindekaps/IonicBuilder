@@ -3,16 +3,6 @@
 
 <head>
 </head>
-<div class="dropzone">
-    <div id="draggable" draggable="true">
-        This div is draggable
-    </div>
-</div>
-<div class="dropzone" id="parent">
-    <div class="dropzone" draggable="true">1</div>
-    <div class="dropzone" draggable="true">2</div>
-    <div class="dropzone" draggable="true">3</div>
-</div>
 
 <style>
     #draggable {
@@ -30,112 +20,234 @@
         padding: 10px;
     }
     
+    .draggableComponents {
+        width: 150px;
+        height: 100%;
+        background: blueviolet;
+        float: left;
+    }
+    
     #parent {
-        height: auto;
-        background: green;
+        height: 506px;
+        width: 320px;
+        transform: scale3d(1, 1, 1);
+        transition: 0.25s ease-out;
+        transform-origin: center top 0px;
+        margin-top: 57.0576px;
+        margin-left: 135px;
+    }
+    
+    .android {
+        height: 713.22px;
+        width: 615px;
+        overflow: hidden;
+        transition: 0.25s ease-out;
+        margin-top: 105px;
+        margin-bottom: 110px;
+        margin-left: 0px;
+        background-image: url(assests/android-skin.png);
+        background-repeat: no-repeat;
+        background-position: 50% 0px;
+        background-size: 399.134px 713.22px;
+        margin-left: 135px;
+        float: left;
+    }
+    
+    .icon::before {
+        background: no-repeat transparent center top url(assests/components-sprite.png);
+        background-size: 90px;
+        width: 90px;
+        height: 50px;
+        left: 0;
+        content: '';
+        position: absolute;
+        transition-property: opacity, transform;
+        transform: scale3d(1, 1, 1);
+        transition-duration: .25s;
+        transition-timing-function: linear, cubic-bezier(0.33, 2, 0.66, 1);
+    }
+    
+    .input::before {
+        background-position-y: -500px;
+    }
+    
+    ul li .component-content {
+        text-align: center;
+        vertical-align: middle;
+        position: relative;
+    }
+    
+    a .icon {
+        width: 90px;
+        height: 50px;
+        display: block;
+        margin: 22px auto 0;
+        position: relative;
+    }
+    
+    ul li a span+span {
+        display: block;
+        position: absolute;
+        bottom: -17px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        line-height: 17px;
+    }
+    
+    ul li {
+        max-width: 122px;
+        width: 122px;
+        height: 106px;
+        margin-right: 2px;
+        list-style: none;
+        line-height: 96px;
+        margin-left: 0;
+        position: relative;
     }
 </style>
 
-<script>
-    var dragged;
-    var points;
-    document.addEventListener("mousemove", function(event) {
-            points = event.pageY;
+<body>
+    <ul class="draggableComponents">
+        <li draggable="true" data-type="input">
+            <a>
+                <div class="component-content">
+                    <span class="icon input"></span>
+                    <span>Input Box</span>
+                </div>
+            </a>
+        </li>
+        <li draggable="true" data-type="button">
+            <a>
+                <div class="component-content">
+                    <span class="icon input"></span>
+                    <span>Button</span>
+                </div>
+            </a>
+        </li>
 
-        }, false)
+    </ul>
+    <div class="android">
+        <div class="dropzone" id="parent">
+
+        </div>
+    </div>
+
+    <script>
+        var dragged;
         /* events fired on the draggable target */
-    document.addEventListener("drag", function(event) {
-        var darggable = event.target;
-    }, false);
-
-    document.addEventListener("dragstart", function(event) {
-        // store a ref. on the dragged elem
-        dragged = event.target;
-        // var dragged = event.target.cloneNode(true);
-        // event.target.parentNode.appendChild(dragged);
-        // make it half transparent
-        event.target.style.opacity = .5;
-    }, false);
-
-    document.addEventListener("dragend", function(event) {
-        // reset the transparency
-
-        event.target.style.opacity = "";
-    }, false);
-
-    /* events fired on the drop targets */
-    document.addEventListener("dragover", function(event) {
-        // prevent default to allow drop
-        var ev = event || window.event;
-        dragged.y = event.pageY;
-        //console.log(">>>>>>>>>>>>", event.pageY);
-        event.preventDefault();
-    }, false);
-
-    document.addEventListener("dragenter", function(event) {
-        // highlight potential drop target when the draggable element enters it
-        if (event.target.className == "dropzone") {
-            event.target.style.background = "purple";
+        var componentType = "";
+        var currentElement = "";
+        var component = {
+            "input": "<div  draggable='true'><input type='text'></div>",
+            "button": "<div draggable='true'><button>Button</button></div>"
         }
+        document.addEventListener("drag", function(event) {
+            var darggable = event.target;
+        }, false);
 
-    }, false);
+        document.addEventListener("dragstart", function(event) {
+            // store a ref. on the dragged elem
+            dragged = event.target;
+            // var dragged = event.target.cloneNode(true);
+            // event.target.parentNode.appendChild(dragged);
+            // make it half transparent
+            componentType = "";
+            componentType = dragged.getAttribute("data-type");
+            currentElement = component[componentType];
+            event.target.style.opacity = .5;
+        }, false);
 
-    document.addEventListener("dragleave", function(event) {
-        // reset background of potential drop target when the draggable element leaves it
-        if (event.target.className == "dropzone") {
-            event.target.style.background = "";
-        }
+        document.addEventListener("dragend", function(event) {
+            // reset the transparency
+            event.target.style.opacity = "";
+        }, false);
 
-    }, false);
+        /* events fired on the drop targets */
+        document.addEventListener("dragover", function(event) {
+            // prevent default to allow drop
+            var ev = event || window.event;
+            dragged.y = event.pageY;
+            //console.log(">>>>>>>>>>>>", event.pageY);
+            event.preventDefault();
+        }, false);
 
-    document.addEventListener("drop", function(event) {
-        // prevent default action (open as link for some elements)
-        event.preventDefault();
-        // move dragged elem to the selected drop target
-        if (event.target.className == "dropzone") {
-            event.target.style.background = "";
-            // dragged.parentNode.removeChild(dragged);
-            // event.target.appendChild(dragged);
-            var parentNode = event.target;
-            var childs = event.target.children
-            console.log(childs, childs.length);
-            var pos = -1;
-            if (childs.length > 0) {
-                pos = checkDropPosition(dragged, childs);
+        document.addEventListener("dragenter", function(event) {
+            // highlight potential drop target when the draggable element enters it
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "purple";
             }
 
-            console.log(pos);
-            if (pos >= 0) {
-                parentNode.insertBefore(dragged, event.target.children[pos]);
-            } else {
-                event.target.appendChild(dragged);
+        }, false);
+
+        document.addEventListener("dragleave", function(event) {
+            // reset background of potential drop target when the draggable element leaves it
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
             }
 
-        }
+        }, false);
 
-    }, false);
-    var checkDropPosition = function(darggable, siblings) {
-        var draggableRect = darggable.getBoundingClientRect();
-        var pointY = darggable.y + draggableRect.height / 2;
-        console.log(pointY);
-        for (var i = 0; i < siblings.length; i++) {
-            var ele = siblings[i];
-            if (isBefore(ele, pointY)) {
-                return i;
+        document.addEventListener("drop", function(event) {
+            // prevent default action (open as link for some elements)
+            event.preventDefault();
+            // move dragged elem to the selected drop target
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+                // dragged.parentNode.removeChild(dragged);
+                // event.target.appendChild(dragged);
+                var parentNode = event.target;
+                var childs = event.target.children
+                console.log(childs, childs.length);
+                var pos = -1;
+                if (childs.length > 0) {
+                    pos = checkDropPosition(dragged, childs);
+                }
+                var ele;
+                if (componentType) {
+                    ele = createElement(currentElement);
+                } else {
+                    ele = dragged;
+                }
+
+                console.log(pos);
+                if (pos >= 0) {
+                    parentNode.insertBefore(ele, event.target.children[pos]);
+                } else {
+                    event.target.appendChild(ele);
+                }
+
             }
+
+        }, false);
+        var checkDropPosition = function(darggable, siblings) {
+            var draggableRect = darggable.getBoundingClientRect();
+            var pointY = darggable.y + draggableRect.height / 2;
+            console.log(pointY);
+            for (var i = 0; i < siblings.length; i++) {
+                var ele = siblings[i];
+                if (isBefore(ele, pointY)) {
+                    return i;
+                }
+            }
+            return -1;
         }
-        return -1;
-    }
-    var showMsg = function(msg) {
-        console.log(msg);
-    }
-    var isBefore = function(ele, pointY) {
-        var childRect = ele.getBoundingClientRect();
-        var bottom = childRect.bottom;
-        console.log(pointY, bottom);
-        return pointY < bottom ? true : false;
-    }
-</script>
+        var showMsg = function(msg) {
+            console.log(msg);
+        }
+        var isBefore = function(ele, pointY) {
+            var childRect = ele.getBoundingClientRect();
+            var bottom = childRect.bottom;
+            console.log(pointY, bottom);
+            return pointY < bottom ? true : false;
+        }
+        var createElement = function(string) {
+            var temp = document.createElement('div');
+            temp.innerHTML = string;
+            var htmlObject = temp.firstChild;
+            return htmlObject;
+        }
+    </script>
 
 </body>
 
