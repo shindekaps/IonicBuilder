@@ -105,6 +105,10 @@
         margin-left: 0;
         position: relative;
     }
+    
+    div {
+        margin: 1rem;
+    }
 </style>
 
 <body>
@@ -168,14 +172,16 @@
             // prevent default to allow drop
             var ev = event || window.event;
             dragged.y = event.pageY;
-            //console.log(">>>>>>>>>>>>", event.pageY);
+            console.log(">>>>>>>>>>>>", event.target);
             event.preventDefault();
+            if (!componentType)
+                checkDrop(event);
         }, false);
 
         document.addEventListener("dragenter", function(event) {
             // highlight potential drop target when the draggable element enters it
             if (event.target.className == "dropzone") {
-                event.target.style.background = "purple";
+                event.target.style.border = "1px purple solid";
             }
 
         }, false);
@@ -183,7 +189,7 @@
         document.addEventListener("dragleave", function(event) {
             // reset background of potential drop target when the draggable element leaves it
             if (event.target.className == "dropzone") {
-                event.target.style.background = "";
+                event.target.style.border = "none";
             }
 
         }, false);
@@ -191,33 +197,7 @@
         document.addEventListener("drop", function(event) {
             // prevent default action (open as link for some elements)
             event.preventDefault();
-            // move dragged elem to the selected drop target
-            if (event.target.className == "dropzone") {
-                event.target.style.background = "";
-                // dragged.parentNode.removeChild(dragged);
-                // event.target.appendChild(dragged);
-                var parentNode = event.target;
-                var childs = event.target.children
-                console.log(childs, childs.length);
-                var pos = -1;
-                if (childs.length > 0) {
-                    pos = checkDropPosition(dragged, childs);
-                }
-                var ele;
-                if (componentType) {
-                    ele = createElement(currentElement);
-                } else {
-                    ele = dragged;
-                }
-
-                console.log(pos);
-                if (pos >= 0) {
-                    parentNode.insertBefore(ele, event.target.children[pos]);
-                } else {
-                    event.target.appendChild(ele);
-                }
-
-            }
+            checkDrop(event);
 
         }, false);
         var checkDropPosition = function(darggable, siblings) {
@@ -246,6 +226,35 @@
             temp.innerHTML = string;
             var htmlObject = temp.firstChild;
             return htmlObject;
+        }
+        var checkDrop = function(event) {
+            // move dragged elem to the selected drop target
+            if (event.target.className == "dropzone") {
+                event.target.style.background = "";
+                // dragged.parentNode.removeChild(dragged);
+                // event.target.appendChild(dragged);
+                var parentNode = event.target;
+                var childs = event.target.children
+                console.log(childs, childs.length);
+                var pos = -1;
+                if (childs.length > 0) {
+                    pos = checkDropPosition(dragged, childs);
+                }
+                var ele;
+                if (componentType) {
+                    ele = createElement(currentElement);
+                } else {
+                    ele = dragged;
+                }
+
+                console.log(pos);
+                if (pos >= 0) {
+                    parentNode.insertBefore(ele, event.target.children[pos]);
+                } else {
+                    event.target.appendChild(ele);
+                }
+
+            }
         }
     </script>
 
